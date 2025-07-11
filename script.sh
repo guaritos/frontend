@@ -12,3 +12,4 @@ gczp)
     git push origin head
     ;;
 esac
+
