@@ -15,6 +15,8 @@
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^5.1.1",
     "@monaco-editor/react": "^4.7.0",
+    "@tanstack/react-query": "^5.83.0",
+    "axios": "^1.10.0",
     "framer-motion": "^12.23.3",
     "keyv": "^5.3.4",
     "monaco-editor": "^0.52.2",
