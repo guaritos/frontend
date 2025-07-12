@@ -6,7 +6,7 @@ import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
 
 export function Provider({ children }: { children: React.ReactNode }) {
     return (
-        <UIProvider>
+        <UIProvider defaultTheme="dark">
             <AptosWalletAdapterProvider
                 autoConnect={true}
                 dappConfig={{

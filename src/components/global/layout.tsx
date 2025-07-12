@@ -7,7 +7,7 @@ interface PageLayoutProps extends HTMLChakraProps<"div"> {
 
 export function PageLayout({ children, ...props }: PageLayoutProps) {
     return (
-        <chakra.div p={"4"} w={"full"} h={"full"} {...props}>
+        <chakra.div p={"4"} w={"full"} h={"full"} overflow={"auto"} {...props}>
             {children}
         </chakra.div>
     );
