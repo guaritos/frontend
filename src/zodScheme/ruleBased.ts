@@ -82,7 +82,7 @@ const thenSchema = z.array(
 );
 
 export const ruleSchema = z.object({
-    id: z.string().regex(/^rule-[a-z\-0-9]+$/, "Invalid rule ID format"),
+    id: z.string(),
     name: z.string().min(1),
     interval: z.string(), // Could be further refined with regex e.g. /^[0-9]+[smhd]$/
     enabled: z.boolean(),

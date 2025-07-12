@@ -1,10 +1,11 @@
 "use client";
 
-import { chakra, HTMLChakraProps, Input } from "@chakra-ui/react";
+import { chakra, HTMLChakraProps, Input, ListCollection } from "@chakra-ui/react";
 import { Controller, SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { RuleBasedYamlEditor } from "@/engines/RuleBasedYamlEditor";
+import { RuleYamlEditor } from "@/engines/RuleBasedYamlEditor";
+import { SelectRoot } from "@/components/ui/select";
 
 interface Props extends HTMLChakraProps<"div"> {
 
@@ -64,10 +65,9 @@ export function CreateTracerForm({ children, ...props }: Props) {
                     name="mode"
                     control={control}
                     render={({ field }) => (
-                        <Input
-                            {...field}
-                            placeholder="Select mode (odt/rbt)"
-                            type="text"
+                        <SelectRoot
+                            collection={ListCollection}
+                            onValueChange={(e) => field.onChange(e)}
                         />
                     )}
                 />
@@ -75,7 +75,10 @@ export function CreateTracerForm({ children, ...props }: Props) {
                     name="rule"
                     control={control}
                     render={({ field }) => (
-                        <RuleBasedYamlEditor />
+                        <RuleYamlEditor
+                            defaultValue={field.value}
+                            onChange={(field.onChange)}
+                        />
                     )}
                 />
             </form>
