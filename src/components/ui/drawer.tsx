@@ -15,8 +15,8 @@ export const DrawerContent = React.forwardRef<
   const { children, portalled = true, portalRef, offset, ...rest } = props
   return (
     <Portal disabled={!portalled} container={portalRef}>
-      <ChakraDrawer.Positioner padding={offset}>
-        <ChakraDrawer.Content ref={ref} {...rest} asChild={false}>
+      <ChakraDrawer.Positioner p={"4"} padding={offset}>
+        <ChakraDrawer.Content rounded={"2xl"} ref={ref} {...rest} asChild={false}>
           {children}
         </ChakraDrawer.Content>
       </ChakraDrawer.Positioner>
