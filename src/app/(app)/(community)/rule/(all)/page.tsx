@@ -2,6 +2,7 @@ import Image from "next/image";
 import { PageLayout } from "@/components/global/layout";
 import { Center, Heading, Text, VStack } from "@chakra-ui/react";
 import { RuleBasedCard } from "@/app/(app)/_components/RuleBasedCard";
+import { AllRuleBasedContainer } from "./_components/AllRuleBasedContainer";
 
 export default function Page() {
     return (
@@ -23,19 +24,7 @@ export default function Page() {
                             Explore community templates to enhance your rule-based system.
                         </Text>
                     </VStack>
-                    <RuleBasedCard
-                        w={"full"}
-                        rule={{
-                            id: "rule-ml-v1",
-                            name: "Detect Money Laundering",
-                            enabled: true,
-                            interval: "1h",
-                            then: [],
-                            when: {
-                                and: []
-                            }
-                        }}
-                    />
+                    <AllRuleBasedContainer />
                 </VStack>
             </Center>
         </PageLayout>
