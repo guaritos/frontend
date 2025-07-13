@@ -1,3 +1,5 @@
+"use client";
+
 import { serverAxios } from "@/utils/serverAxios";
 import { UseHookProps } from "./useGetTracer";
 import { UseQueryOptions, UseQueryResult, useQuery } from "@tanstack/react-query";
@@ -26,7 +28,7 @@ export const useGetRulesByUserId = (props: UseHookProps<GetRulesPayload, Partial
             if (!props.payload?.userId) {
                 throw new Error("User ID is required");
             }
-            const response = await serverAxios.get(`/rule-engine/rules/${props.payload.userId}`);
+            const response = await serverAxios.get(`/rule-engine/rules/user/${props.payload.userId}`);
             return response.data;
         },
         enabled: !!props.payload?.userId,

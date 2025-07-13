@@ -1,3 +1,5 @@
+"use client";
+
 import { serverAxios } from "@/utils/serverAxios";
 import { UseHookProps } from "./useGetTracer";
 import { UseQueryOptions, UseQueryResult, useQuery, UseMutationOptions, UseMutationResult, useMutation } from "@tanstack/react-query";
@@ -10,7 +12,7 @@ export const useGetCronRules = (props?: UseHookProps<undefined, Partial<UseQuery
     return useQuery<GetCronRulesData, Error>({
         queryKey: ["getCronRules"],
         queryFn: async (): Promise<GetCronRulesData> => {
-            const response = await serverAxios.get("/rule-engine/cron");
+            const response = await serverAxios.get("/rule-engine/crons");
             return response.data;
         },
         ...props?.options,
@@ -30,7 +32,7 @@ export const useRemoveRuleFromScheduler = (props?: UseHookProps<RemoveRuleFromSc
     return useMutation({
         mutationKey: ["removeRuleFromScheduler"],
         mutationFn: async (payload) => {
-            const response = await serverAxios.get(`/rule-engine/cron/${payload.ruleId}`);
+            const response = await serverAxios.get(`/rule-engine/crons/${payload.ruleId}`);
             return response.data;
         },
         onSuccess: (data, variables) => {

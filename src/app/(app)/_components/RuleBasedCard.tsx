@@ -13,7 +13,23 @@ interface Props extends StackProps {
 
 export const RuleBasedCard = ({ rule, children, ...props }: Props) => {
     return (
-        <VStack align={"start"} p={"4"} rounded={"2xl"} border={"1px solid"} borderColor={"border.emphasized"} bg={"#474747/25"} backdropFilter={"auto"} backdropBlur={"64px"} {...props}>
+        <VStack
+                    cursor={"pointer"} 
+            align={"start"} 
+            p={"4"} 
+            rounded={"2xl"} 
+            border={"1px solid"} 
+            borderColor={"border.emphasized"} 
+            bg={"#474747/25"} 
+            backdropFilter={"auto"} 
+            backdropBlur={"64px"} 
+            transition={"all 0.3s ease-in-out"}
+            _hover={{
+                borderColor: "primary.solid",
+                scale: 1.02,
+            }}
+            {...props}
+        >
             <VStack align={"start"} w={"full"} gap={"0"}>
                 <Text color={"fg.subtle"}>
                     #{rule.id}

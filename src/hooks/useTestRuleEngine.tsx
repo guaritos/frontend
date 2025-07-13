@@ -1,3 +1,5 @@
+"use client";
+
 import { serverAxios } from "@/utils/serverAxios";
 import { UseHookProps } from "./useGetTracer";
 import { UseQueryOptions, UseQueryResult, useQuery } from "@tanstack/react-query";

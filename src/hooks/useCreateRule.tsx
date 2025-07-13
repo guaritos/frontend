@@ -1,3 +1,5 @@
+"use client";
+
 import { serverAxios } from "@/utils/serverAxios";
 import { UseHookProps } from "./useGetTracer";
 import { UseMutationOptions, UseMutationResult, useMutation } from "@tanstack/react-query";
@@ -15,7 +17,7 @@ export const useCreateRule = (props?: UseHookProps<CreateRulePayload, Partial<Us
     return useMutation({
         mutationKey: ["createRule"],
         mutationFn: async (payload) => {
-            const response = await serverAxios.post("/rule-engine/rule", payload.data);
+            const response = await serverAxios.post("/rule-engine/rules", payload.data);
             return response.data;
         },
         onSuccess: (data) => {

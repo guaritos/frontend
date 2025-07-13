@@ -1,3 +1,5 @@
+"use client";
+
 import { serverAxios } from "@/utils/serverAxios";
 import { UseHookProps } from "./useGetTracer";
 import { UseMutationOptions, UseMutationResult, useMutation } from "@tanstack/react-query";
@@ -15,7 +17,7 @@ export const useDeleteRule = (props?: UseHookProps<DeleteRulePayload, Partial<Us
     return useMutation({
         mutationKey: ["deleteRule"],
         mutationFn: async (payload) => {
-            const response = await serverAxios.delete(`/rule-engine/rule/${payload.ruleId}`);
+            const response = await serverAxios.delete(`/rule-engine/rules/${payload.ruleId}`);
             return response.data;
         },
         onSuccess: (data, variables) => {
