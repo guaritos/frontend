@@ -6,23 +6,25 @@ import z from "zod";
 import { HiPlus } from "react-icons/hi";
 import { DrawerActionTrigger, DrawerBody, DrawerContent, DrawerHeader, DrawerRoot, DrawerTrigger } from "@/components/ui/drawer";
 import { Tag } from "@/components/ui/tag";
+import { useGetDaoBlacklist } from "@/hooks/useGetDaoBlacklist";
 
 interface Props extends StackProps {
     rule: z.infer<typeof ruleSchema>;
 }
 
 export const RuleBasedCard = ({ rule, children, ...props }: Props) => {
+    useGetDaoBlacklist();
     return (
         <VStack
-                    cursor={"pointer"} 
-            align={"start"} 
-            p={"4"} 
-            rounded={"2xl"} 
-            border={"1px solid"} 
-            borderColor={"border.emphasized"} 
-            bg={"#474747/25"} 
-            backdropFilter={"auto"} 
-            backdropBlur={"64px"} 
+            cursor={"pointer"}
+            align={"start"}
+            p={"4"}
+            rounded={"2xl"}
+            border={"1px solid"}
+            borderColor={"border.emphasized"}
+            bg={"#474747/25"}
+            backdropFilter={"auto"}
+            backdropBlur={"64px"}
             transition={"all 0.3s ease-in-out"}
             _hover={{
                 borderColor: "primary.solid",
