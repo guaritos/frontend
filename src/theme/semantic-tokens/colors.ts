@@ -701,7 +701,7 @@ export const colors = defineSemanticTokens.colors({
     contrast: {
       value: {
         _light: "{colors.default.50}",
-        _dark: "{colors.black}",
+        _dark: "{colors.default.900}",
       },
     },
     fg: {

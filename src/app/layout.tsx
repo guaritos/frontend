@@ -33,10 +33,7 @@ export default function RootLayout({
         }}
       >
         <Provider>
-          <Center w={"full"} h={"100vh"} display={"flex"} flexDirection="column">
-            <Header />
-            {children}
-          </Center>
+          {children}
         </Provider>
       </body>
     </html>

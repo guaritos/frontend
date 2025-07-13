@@ -14,7 +14,7 @@ export default function Page() {
                 />
             </Center>
             <Center w={"full"} h="full">
-                <VStack h={"full"} maxW={"2xl"}>
+                <VStack w={"full"} h={"full"} maxW={"2xl"}>
                     <VStack w={"full"} align={"start"}>
                         <Heading as={"h1"} size="2xl">
                             Create rule
