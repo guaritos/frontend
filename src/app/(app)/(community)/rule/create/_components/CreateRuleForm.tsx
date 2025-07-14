@@ -31,6 +31,7 @@ const createRuleFormSchema = z.object({
 export function CreateRuleForm({ children, ...props }: Props) {
     const { account } = useWallet();
     const [enabledRule, setEnabledRule] = useState(false)
+    const [template, setTemplate] = useState(false);
 
     const { mutateAsync: createRule } = useCreateRule();
 
@@ -49,8 +50,21 @@ export function CreateRuleForm({ children, ...props }: Props) {
     });
 
     const onSubmit: SubmitHandler<CreateRuleFormData> = async (data) => {
+        if (!account) {
+            toaster.error({
+                title: "Wallet not connected",
+                description: "Please connect your wallet to create a rule."
+            });
+            return;
+        }
+
+        const ruleObject = YAML.parse(data.rule || "") || {};
+        ruleObject.user_id = account.address;
+
+        const updatedYaml = YAML.stringify(ruleObject);
+
         await createRule({
-            data: data.rule
+            data: updatedYaml
         })
     };
 
@@ -78,6 +92,26 @@ export function CreateRuleForm({ children, ...props }: Props) {
                                 const updatedYaml = YAML.stringify(ruleObject);
                                 setValue("rule", updatedYaml);
                                 setEnabledRule(e.checked);
+                            } catch (err) {
+                                console.error("Invalid YAML format", err);
+                            }
+                        }}
+                    />
+                </Field>
+                <Field label="Template" helperText="Choose this if rule is a template">
+                    <Switch
+                        label="Template"
+                        checked={template}
+                        onCheckedChange={(e) => {
+                            try {
+                                const currentRule = watch("rule") || "";
+                                const ruleObject = YAML.parse(currentRule) || {};
+
+                                ruleObject.is_template = e.checked;
+
+                                const updatedYaml = YAML.stringify(ruleObject);
+                                setValue("rule", updatedYaml);
+                                setTemplate(e.checked);
                             } catch (err) {
                                 console.error("Invalid YAML format", err);
                             }

@@ -17,7 +17,12 @@ export const useCreateRule = (props?: UseHookProps<CreateRulePayload, Partial<Us
     return useMutation({
         mutationKey: ["createRule"],
         mutationFn: async (payload) => {
-            const response = await serverAxios.post("/rule-engine/rules", payload.data);
+            const response = await serverAxios.post("/rule-engine/rules", payload.data, {
+                headers: {
+                    "Content-Type": "application/yaml",
+                },
+            });
+
             return response.data;
         },
         onSuccess: (data) => {

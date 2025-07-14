@@ -6,14 +6,25 @@ import z from "zod";
 import { HiPlus } from "react-icons/hi";
 import { DrawerActionTrigger, DrawerBody, DrawerContent, DrawerHeader, DrawerRoot, DrawerTrigger } from "@/components/ui/drawer";
 import { Tag } from "@/components/ui/tag";
-import { useGetDaoBlacklist } from "@/hooks/useGetDaoBlacklist";
+import { useGetOwnerBlacklist } from "@/hooks/useGetOwnerBlacklist";
+import contracts from "@/constants/contracts";
+import { useEffect } from "react";
 
 interface Props extends StackProps {
     rule: z.infer<typeof ruleSchema>;
 }
 
 export const RuleBasedCard = ({ rule, children, ...props }: Props) => {
-    useGetDaoBlacklist();
+    const { data, error } = useGetOwnerBlacklist({
+        payload: {
+            owner: contracts.GUARITOS_NFT_DAO_ADDRESS
+        }
+    });
+
+    useEffect(() => {
+        console.log("Blacklist data:", error);
+    }, [error]);
+
     return (
         <VStack
             cursor={"pointer"}
