@@ -21,6 +21,7 @@ export { useGetOwnerBlacklist } from './useGetOwnerBlacklist';
 
 // Tracer hooks
 export { useTracerEvent } from './useTracerEvent';
+export { useTracerData } from './useTracerData';
 
 // Scheduler hooks
 export { useGetCronRules, useRemoveRuleFromScheduler } from './useCronRules';

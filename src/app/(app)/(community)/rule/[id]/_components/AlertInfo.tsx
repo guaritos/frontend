@@ -1,6 +1,8 @@
 "use client";
 
-import { Box, Text, Badge, VStack, HStack, Icon, Flex } from '@chakra-ui/react';
+import { Field } from '@/components/ui/field';
+import { Tag } from '@/components/ui/tag';
+import { Box, Text, Badge, VStack, HStack, Icon, Flex, Code } from '@chakra-ui/react';
 import { FiAlertTriangle, FiClock, FiUser, FiHash, FiCheckCircle } from 'react-icons/fi';
 
 interface AlertInfoProps {
@@ -20,89 +22,81 @@ export const AlertInfo: React.FC<AlertInfoProps> = ({ alertData }) => {
   };
 
   return (
-    <Box bg="white" border="1px" borderColor="gray.200" rounded="lg" p={4}>
+    <Box rounded="lg" w={"full"}>
       <Flex align="center" justify="space-between" mb={3}>
         <HStack>
           <Icon as={FiAlertTriangle} color="orange.500" />
           <Text fontSize="sm" fontWeight="semibold">Alert Information</Text>
         </HStack>
-        <Badge colorScheme={getStatusColor(alertData.status)} variant="subtle">
+        <Badge colorPalette={getStatusColor(alertData.status)} variant="subtle">
           {alertData.status}
         </Badge>
       </Flex>
 
       <VStack align="stretch" gap={3}>
-        <Box>
-          <HStack mb={1}>
-            <Icon as={FiHash} boxSize="12px" />
-            <Text fontSize="xs" fontWeight="medium" color="gray.500">Alert ID</Text>
-          </HStack>
+        <Field label="Alert ID" w="full">
           <Text fontSize="sm">{alertData.id}</Text>
-        </Box>
+        </Field>
 
-        <Box>
-          <HStack mb={1}>
-            <Icon as={FiUser} boxSize="12px" />
-            <Text fontSize="xs" fontWeight="medium" color="gray.500">Rule</Text>
-          </HStack>
+        <Field label="Rule" w="full">
           <Text fontSize="sm">{alertData.rules?.name || 'Unknown Rule'}</Text>
-        </Box>
+        </Field>
 
-        <Box>
-          <HStack mb={1}>
-            <Icon as={FiClock} boxSize="12px" />
-            <Text fontSize="xs" fontWeight="medium" color="gray.500">Created At</Text>
-          </HStack>
+        <Field label="Created At" w="full">
           <Text fontSize="sm">{new Date(alertData.created_at).toLocaleString()}</Text>
-        </Box>
+        </Field>
 
-        <Box h="1px" bg="gray.200" my={2} />
-
-        <Box>
-          <Text fontSize="xs" fontWeight="medium" color="gray.500" mb={2}>Rule Conditions</Text>
-          <VStack align="stretch" gap={1}>
+        <Field label="Rule Conditions" w="full">
+          <VStack align="stretch" gap={"2"}>
             {alertData.result?.queryResult?.map((condition: any, index: number) => (
-              <Box key={index} bg="gray.50" p={2} rounded="md">
-                <Text fontSize="xs" fontFamily="mono">
-                  {condition.field} {condition.operator} {JSON.stringify(condition.expected)}
+              <Box key={index} bg="bg" p={"4"} rounded="2xl" w={"full"}>
+                <Text fontSize="xs" fontFamily="mono" wordBreak={"break-word"} lineHeight={"taller"}>
+                  <Code colorPalette={"default"} rounded={"md"}>{condition.field}</Code>{' '}
+                  <Tag as="span" px={1} py={0.5} colorPalette={"yellow"} variant={"solid"} fontWeight="bold">
+                    {condition.operator}
+                  </Tag>{' '}
+                  {JSON.stringify(condition.expected)}
                 </Text>
-                <Badge size="sm" colorScheme="green" mt={1}>
-                  Matched: {condition.matched?.length || 0} items
+                <Badge size="sm" colorPalette="green" mt={1}>
+                  Matched {condition.matched?.length || 0} items
                 </Badge>
               </Box>
             ))}
           </VStack>
-        </Box>
+        </Field>
 
         {alertData.result?.aggregateResult && alertData.result.aggregateResult.length > 0 && (
-          <Box>
-            <Text fontSize="xs" fontWeight="medium" color="gray.500" mb={2}>Aggregate Results</Text>
-            <VStack align="stretch" gap={1}>
+          <Field label="Aggregate Results" w="full">
+            <VStack align="stretch" gap={1} w={"full"}>
               {alertData.result.aggregateResult.map((agg: any, index: number) => (
-                <Box key={index} bg="blue.50" p={2} rounded="md">
-                  <Text fontSize="xs" fontFamily="mono">
-                    {agg.op}({agg.field}) {agg.operator} {agg.expected}
+                <Box key={index} bg="bg" p={"4"} rounded="2xl" w={"full"}>
+                  <Text fontSize="xs" wordBreak={"break-word"} lineHeight={"taller"}>
+                    <Tag colorPalette={"primary"} variant={"solid"}>{agg.op}</Tag>{' '}
+                    <Code colorPalette={"default"}>({agg.field})</Code>{' '}
+                    <Tag as="span" px={1} py={0.5} colorPalette={"yellow"} variant={"solid"} fontWeight="bold">
+                      {agg.operator}
+                    </Tag>{' '}
+                    {agg.expected}
                   </Text>
                   <HStack justify="space-between" mt={1}>
-                    <Badge size="sm" colorScheme="blue">
-                      Expected: {agg.expected}
+                    <Badge size="sm" colorPalette="blue">
+                      Expected {agg.expected}
                     </Badge>
-                    <Badge size="sm" colorScheme={agg.actual > agg.expected ? 'green' : 'red'}>
-                      Actual: {agg.actual}
+                    <Badge size="sm" colorPalette={agg.actual > agg.expected ? 'green' : 'red'}>
+                      Actual {agg.actual}
                     </Badge>
                   </HStack>
                 </Box>
               ))}
             </VStack>
-          </Box>
+          </Field>
         )}
 
-        <Box>
-          <Text fontSize="xs" fontWeight="medium" color="gray.500" mb={1}>Message</Text>
-          <Text fontSize="sm" bg="gray.50" p={2} rounded="md">
+        <Field label="Alert Message" w={"full"}>
+          <Text fontSize="sm" p={"4"} bg={"primary.solid"} color={"primary.contrast"} rounded="2xl">
             {alertData.message}
           </Text>
-        </Box>
+        </Field>
       </VStack>
     </Box>
   );

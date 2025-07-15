@@ -35,7 +35,7 @@ export const colors = defineSemanticTokens.colors({
     panel: {
       value: {
         _light: "{colors.white}",
-        _dark: "{colors.gray.950}",
+        _dark: "#27272A",
       },
     },
     error: {
@@ -707,7 +707,7 @@ export const colors = defineSemanticTokens.colors({
     fg: {
       value: {
         _light: "{colors.default.700}",
-        _dark: "{colors.default.300}",
+        _dark: "{colors.default.500}",
       },
     },
     subtle: {

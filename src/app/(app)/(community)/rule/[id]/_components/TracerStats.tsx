@@ -19,10 +19,10 @@ export const TracerStats: React.FC<TracerStatsProps> = ({
   isConnected
 }) => {
   return (
-    <Box bg="white" border="1px" borderColor="gray.200" rounded="lg" p={4} mb={4}>
+    <Box w={"full"} rounded="lg">
       <Flex align="center" justify="space-between" mb={3}>
         <Text fontSize="sm" fontWeight="semibold">System Stats</Text>
-        <Badge colorScheme={isConnected ? "green" : "red"} variant="subtle">
+        <Badge colorPalette={isConnected ? "green" : "red"} variant="subtle">
           {isConnected ? 'Live' : 'Offline'}
         </Badge>
       </Flex>
