@@ -11,12 +11,10 @@ export const Providers: React.FC<Props> = ({ children, ...props }) => {
 
     useEffect(() => {
         if (!connected) {
-            if (!connected) {
-                connect("Petra");
-            }
+            connect("Petra");
         }
-    }, [connected, connect]);
-    
+    }, [connected]);
+
     return (
         <>
             {children}

@@ -1,8 +1,8 @@
 "use client";
 
 import { siteConfig } from "@/configs/site";
-import { Stack, StackProps, Image, Heading, HStack, Button, Icon, Link, VStack, Input, For, IconButton } from "@chakra-ui/react";
-import { chakra, HTMLChakraProps } from "@chakra-ui/react";
+import { Stack, StackProps, Image, Heading, HStack, Button, Icon, Link, VStack, Input, For, IconButton, Avatar, AvatarIcon, PopoverRootProps } from "@chakra-ui/react";
+import { chakra, HTMLChakraProps, Text } from "@chakra-ui/react";
 import NextImage from "next/image";
 import { PiGraph } from "react-icons/pi";
 import { TbLayoutDashboard } from "react-icons/tb";
@@ -14,6 +14,8 @@ import { HiPlus } from "react-icons/hi";
 import { usePathname } from "next/navigation";
 import { Tooltip } from "../ui/tooltip";
 import { FaBan } from "react-icons/fa";
+import { PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger } from "../ui/popover";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
 
 interface HeaderProps extends HTMLChakraProps<"header"> {
 }
@@ -119,7 +121,7 @@ export function DashboardSidebar({ children, ...props }: DashboardSidebarProps) 
             borderColor={"border"}
             {...props}
         >
-            <VStack justifyContent={"space-between"} alignItems={"center"} w={"full"}>
+            <VStack justifyContent={"space-between"} alignItems={"center"} w={"full"} h={"full"}>
                 <Image asChild>
                     <NextImage
                         src="/brands/logo-favicon.svg"
@@ -129,7 +131,7 @@ export function DashboardSidebar({ children, ...props }: DashboardSidebarProps) 
                     />
                 </Image>
                 <Icon as={RxDividerHorizontal} color={"fg.muted"} />
-                <VStack>
+                <VStack flex={1}>
                     <For each={links}>
                         {(link) => (
                             <Link href={link.href} key={link.href}>
@@ -159,7 +161,63 @@ export function DashboardSidebar({ children, ...props }: DashboardSidebarProps) 
                         )}
                     </For>
                 </VStack>
+                <WalletAvatar />
             </VStack>
         </chakra.aside>
     );
+}
+
+interface WalletAvatarProps extends Omit<PopoverRootProps, "children"> {
+
+}
+export const WalletAvatar = ({ ...props }: WalletAvatarProps) => {
+    const { account } = useWallet();
+
+
+    return (
+        <PopoverRoot size={"lg"} {...props}>
+            <PopoverTrigger asChild>
+                <Avatar.Root variant={"solid"} colorPalette={"primary"}>
+                    <Avatar.Icon />
+                </Avatar.Root>
+            </PopoverTrigger>
+            <PopoverContent
+                rounded={"2xl"}
+                border={"1px solid"}
+                borderColor={"border.emphasized"}
+                bg={"#474747/25"}
+                backdropFilter={"blur(64px)"}
+                positionAnchor={"top"}
+            >
+                <PopoverBody>
+                    {
+                        account ? (
+                            <VStack align={"start"} w={"full"}>
+                                <Tooltip
+                                    content={account.address.toString()}
+                                    positioning={{
+                                        placement: "right"
+                                    }}
+                                    contentProps={{
+                                        colorPalette: "primary"
+                                    }}
+                                >
+                                    <Text fontSize="sm" color={"primary.solid"}>
+                                        {`${account.address.toString().slice(0, 6)}...${account.address.toString().slice(-3)}`}
+                                    </Text>
+                                </Tooltip>
+                                <Text fontSize="xs" color="fg.muted">Connected</Text>
+                            </VStack>
+                        ) : (
+                            <VStack>
+                                <Text fontSize="sm" fontWeight="bold">Not Connected</Text>
+                                <Text fontSize="xs" color="fg.muted">Please connect your wallet</Text>
+                                <ConnectWalletButton />
+                            </VStack>
+                        )
+                    }
+                </PopoverBody>
+            </PopoverContent>
+        </PopoverRoot>
+    )
 }

@@ -40,8 +40,7 @@ export const RuleBasedCard = ({ rule, ...props }: Props) => {
             border={"1px solid"}
             borderColor={"border.emphasized"}
             bg={"#474747/25"}
-            backdropFilter={"auto"}
-            backdropBlur={"64px"}
+            backdropFilter={"blur(64px)"}
             transition={"all 0.3s ease-in-out"}
             _hover={{
                 borderColor: "primary.solid",
@@ -119,7 +118,7 @@ const RuleBasedDetailDrawer = ({ rule, ...props }: RuleBasedDetailDrawerProps) =
                         </Heading>
                         <HStack w={"full"}>
                             <Tag variant={"solid"} colorPalette={"primary"}>
-                                <Span color={"primary.900"}>Created by</Span> 0x123
+                                Created by {rule.user_id}
                             </Tag>
                         </HStack>
                     </VStack>

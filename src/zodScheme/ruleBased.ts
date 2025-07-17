@@ -85,12 +85,18 @@ export const ruleSchema = z.object({
     id: z.string(),
     name: z.string().min(1),
     description: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    user_id: z.string(),
+    source: z.string(),
     isTemplate: z.boolean().optional(),
-    interval: z.string(), // Could be further refined with regex e.g. /^[0-9]+[smhd]$/
+    cron: z.string().optional(),
     enabled: z.boolean(),
     when: z.object({
         and: z.array(condition), // you can expand to support "or" root too
     }),
     aggregate: aggregateSchema.optional(),
     then: thenSchema,
+    in_owner_blacklist: z.boolean().optional(),
+    in_community_blacklist: z.boolean().optional(),
+    created_at: z.string(),
 });
