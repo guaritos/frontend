@@ -36,10 +36,33 @@ const Brand = (props: StackProps) => {
 }
 
 export function Header({ children, ...props }: HeaderProps) {
+    const paths = [
+        {
+            label: "Home",
+            href: "/",
+        },
+        {
+            label: "Docs",
+            href: "/docs",
+        },
+        {
+            label: "Presentation",
+            href: "https://wynnback.my.canva.site/guaritos",
+        }
+    ]
     return (
         <chakra.header w={"full"} p={["2", "4"]} {...props}>
             <HStack justifyContent={"space-between"} alignItems={"center"} w={"full"}>
                 <Brand />
+                <HStack gap={"4"} justify={"end"}>
+                    <For each={paths}>
+                        {(path) => (
+                            <Link key={path.href} href={path.href} color={"fg"} target="_blank">
+                                {path.label}
+                            </Link>
+                        )}
+                    </For>
+                </HStack>
                 <ConnectWalletButton />
             </HStack>
         </chakra.header>
@@ -50,7 +73,7 @@ export function DashboardHeader({ children, ...props }: HeaderProps) {
     return (
         <chakra.header w={"full"} p={["2", "4"]} {...props}>
             <HStack justifyContent={"space-between"} alignItems={"center"} w={"full"}>
-                <Input rounded={"lg"} size={"sm"} maxW={"md"} placeholder="Search here"/>
+                <Input rounded={"lg"} size={"sm"} maxW={"md"} placeholder="Search here" />
                 <HStack>
                     <Link href={"/rule/create"}>
                         <Button colorPalette={"default"} rounded={"full"}>
@@ -74,11 +97,6 @@ export function DashboardSidebar({ children, ...props }: DashboardSidebarProps) 
             href: "/dashboard",
             label: "Dashboard",
             icon: TbLayoutDashboard,
-        },
-        {
-            href: "/tracer/all",
-            label: "Tracers",
-            icon: PiGraph,
         },
         {
             href: "/rule",

@@ -116,11 +116,14 @@ export function CreateRuleForm({ children, ...props }: Props) {
             return;
         }
 
-        const ruleObject = YAML.parse(data.rule || "") || {};
-        ruleObject.user_id = account.address;
+        const ruleObject = YAML.parse(data.rule || "");
+        ruleObject.source = sourceAddress;
+        ruleObject.user_id = account.address.toString();
+        ruleObject.enabled = enabledRule;
+        ruleObject.is_template = isTemplate;
 
-        const updatedYaml = YAML.stringify(ruleObject);
-
+        const updatedYaml = YAML.stringify(ruleObject );
+        
         await createRule({
             data: updatedYaml
         })
@@ -143,7 +146,7 @@ export function CreateRuleForm({ children, ...props }: Props) {
                             setSourceAddress(e.target.value);
                             try {
                                 const currentRule = watch("rule") || "";
-                                const ruleObject = YAML.parse(currentRule) || {};
+                                const ruleObject = YAML.parse(currentRule);
 
                                 ruleObject.source = e.target.value;
 
@@ -163,7 +166,7 @@ export function CreateRuleForm({ children, ...props }: Props) {
                         onCheckedChange={(e) => {
                             try {
                                 const currentRule = watch("rule") || "";
-                                const ruleObject = YAML.parse(currentRule) || {};
+                                const ruleObject = YAML.parse(currentRule);
 
                                 ruleObject.enabled = e.checked;
 
@@ -183,7 +186,7 @@ export function CreateRuleForm({ children, ...props }: Props) {
                         onCheckedChange={(e) => {
                             try {
                                 const currentRule = watch("rule") || "";
-                                const ruleObject = YAML.parse(currentRule) || {};
+                                const ruleObject = YAML.parse(currentRule);
 
                                 ruleObject.is_template = e.checked;
 

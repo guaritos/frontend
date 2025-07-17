@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, DrawerRootProps, Heading, HStack, Icon, Span, StackProps, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, DrawerRootProps, Heading, HStack, Icon, Span, StackProps, Text, VStack } from "@chakra-ui/react";
 import { ruleSchema } from "@/zodScheme/ruleBased";
 import z from "zod";
 import { HiPlus } from "react-icons/hi";
@@ -12,12 +12,14 @@ import { useEffect } from "react";
 import JsonView from "@uiw/react-json-view";
 import { darkTheme } from "@uiw/react-json-view/dark";
 import { Field } from "@/components/ui/field";
+import { useRouter } from "next/navigation";
 
 interface Props extends StackProps {
     rule: z.infer<typeof ruleSchema>;
 }
 
-export const RuleBasedCard = ({ rule, children, ...props }: Props) => {
+export const RuleBasedCard = ({ rule, ...props }: Props) => {
+    const router = useRouter();
     const { data, error } = useGetOwnerBlacklist({
         payload: {
             owner: contracts.GUARITOS_NFT_DAO_ADDRESS
@@ -45,12 +47,35 @@ export const RuleBasedCard = ({ rule, children, ...props }: Props) => {
                 borderColor: "primary.solid",
                 scale: 1.02,
             }}
+            onClick={() => {
+                router.push(`/rule/${rule.id}`);
+            }}
             {...props}
         >
             <VStack align={"start"} w={"full"} gap={"0"}>
-                <Text color={"fg.subtle"}>
-                    #{rule.id}
-                </Text>
+                <HStack w={"full"} gap={"4"}>
+                    <Text color={"fg.subtle"}>
+                        #{rule.id}
+                    </Text>
+                    {
+                        rule.isTemplate && (
+                            <>
+                                <Tag variant={"surface"} colorPalette={"yellow"}>
+                                    Template
+                                </Tag>
+                            </>
+                        )
+                    }
+                    {
+                        rule.enabled && (
+                            <Box display={"flex"} justifyContent={"flex-end"} w={"full"}>
+                                <Tag variant={"surface"} colorPalette={rule.enabled ? "green" : "red"}>
+                                    {rule.enabled ? "Active" : "Disabled"}
+                                </Tag>
+                            </Box>
+                        )
+                    }
+                </HStack>
                 <Heading as={"h6"} size="md" fontWeight={"semibold"}>
                     {rule.name}
                 </Heading>
@@ -76,7 +101,7 @@ interface RuleBasedDetailDrawerProps extends Omit<DrawerRootProps, "children"> {
 const RuleBasedDetailDrawer = ({ rule, ...props }: RuleBasedDetailDrawerProps) => {
     return (
         <DrawerRoot size={"md"}>
-            <DrawerTrigger asChild>
+            <DrawerTrigger asChild onClick={(e) => e.stopPropagation()}>
                 <Button rounded={"full"} size={"xs"} _active={{
                     scale: 0.975
                 }}>

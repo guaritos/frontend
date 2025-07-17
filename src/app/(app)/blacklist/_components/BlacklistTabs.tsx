@@ -4,11 +4,12 @@ import contracts from "@/constants/contracts";
 import { useGetOwnerBlacklist } from "@/hooks";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { TabsContent, TabsList, TabsRoot, TabsRootProps, TabsTrigger, VStack } from "@chakra-ui/react";
+import { OwnerBlacklistTab } from "./OwnerBlacklistTab";
 
 interface Props extends TabsRootProps { }
 export const BlacklistTabs: React.FC<Props> = ({ children, ...props }) => {
     return (
-        <TabsRoot defaultValue={"owner-blacklist"} colorPalette={"primary"} w={"fit"}>
+        <TabsRoot defaultValue={"owner-blacklist"} colorPalette={"primary"} w={"full"} h={"full"} {...props}>
             <TabsList>
                 <TabsTrigger value="owner-blacklist">
                     Owner
@@ -26,22 +27,6 @@ export const BlacklistTabs: React.FC<Props> = ({ children, ...props }) => {
         </TabsRoot>
     );
 };
-
-const OwnerBlacklistTab: React.FC<Props> = ({ children, ...props }) => {
-    const { account } = useWallet();
-
-    const { data: blacklist, isLoading } = useGetOwnerBlacklist({
-        payload: {
-            owner: account?.address.toString() as string
-        }
-    })
-
-    return (
-        <VStack>
-
-        </VStack>
-    );
-}
 
 const DaoBlacklistTab: React.FC<Props> = ({ children, ...props }) => {
     const { data: blacklist, isLoading } = useGetOwnerBlacklist({
