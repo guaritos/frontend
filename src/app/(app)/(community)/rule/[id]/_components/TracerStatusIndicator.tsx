@@ -1,21 +1,30 @@
 "use client";
 
-import { Box, HStack, Icon, Text, VStack } from "@chakra-ui/react";
-import { HiWifi, HiUsers, HiLink, HiExclamation } from "react-icons/hi";
+import { Box, HStack, Icon, Text, VStack, Button } from "@chakra-ui/react";
+import { HiWifi, HiUsers, HiLink, HiExclamation, HiRefresh } from "react-icons/hi";
 
 interface TracerStatusIndicatorProps {
   isConnected: boolean;
   totalNodes: number;
   totalEdges: number;
   totalEvents: number;
+  reconnectCount?: number;
+  maxReconnectAttempts?: number;
+  onManualReconnect?: () => void;
+  isAutoConnecting?: boolean;
 }
 
 export const TracerStatusIndicator = ({
   isConnected,
   totalNodes,
   totalEdges,
-  totalEvents
+  totalEvents,
+  reconnectCount = 0,
+  maxReconnectAttempts = 3,
+  onManualReconnect,
+  isAutoConnecting = false
 }: TracerStatusIndicatorProps) => {
+  const showReconnectButton = reconnectCount >= maxReconnectAttempts && !isConnected && !isAutoConnecting;
   return (
     <Box
       position="absolute"
@@ -31,16 +40,33 @@ export const TracerStatusIndicator = ({
         scale: 1.02,
       }}
     >
-      <VStack align="start" gap={1}>
-        <HStack>
-          <Icon 
-            as={isConnected ? HiWifi : HiExclamation} 
-            color={isConnected ? "green.500" : "red.500"} 
-            boxSize="14px"
-          />
-          <Text fontSize="xs" fontWeight="semibold" color={isConnected ? "green.500" : "red.500"}>
-            {isConnected ? "Live" : "Offline"}
-          </Text>
+      <VStack align="start" gap={2}>
+        <HStack justify="space-between" w="full">
+          <HStack>
+            <Icon 
+              as={isConnected ? HiWifi : HiExclamation} 
+              color={isConnected ? "green.500" : "red.500"} 
+              boxSize="14px"
+            />
+            <Text fontSize="xs" fontWeight="semibold" color={isConnected ? "green.500" : "red.500"}>
+              {isAutoConnecting ? "Connecting..." : isConnected ? "Live" : "Offline"}
+            </Text>
+          </HStack>
+          
+          {showReconnectButton && onManualReconnect && (
+            <Button
+              size="xs"
+              variant="outline"
+              colorPalette="red"
+              onClick={onManualReconnect}
+              px={2}
+              py={1}
+              h="auto"
+            >
+              <Icon as={HiRefresh} boxSize="10px" mr={1} />
+              Reconnect
+            </Button>
+          )}
         </HStack>
         
         <HStack gap={3}>
@@ -58,6 +84,13 @@ export const TracerStatusIndicator = ({
             {totalEvents} events
           </Text>
         </HStack>
+        
+        {/* Connection attempts indicator */}
+        {reconnectCount > 0 && (
+          <Text fontSize="xs" color="orange.500">
+            Attempts: {reconnectCount}/{maxReconnectAttempts}
+          </Text>
+        )}
       </VStack>
     </Box>
   );

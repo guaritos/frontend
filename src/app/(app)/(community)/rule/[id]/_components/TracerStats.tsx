@@ -31,7 +31,7 @@ export const TracerStats: React.FC<TracerStatsProps> = ({
         <Flex justify="space-between" align="center">
           <HStack>
             <Icon as={FiActivity} color="blue.500" />
-            <Text fontSize="xs" color="gray.600">Total Nodes</Text>
+            <Text fontSize="xs" color="fg.subtle">Total Nodes</Text>
           </HStack>
           <Text fontSize="sm" fontWeight="medium">{totalNodes}</Text>
         </Flex>
@@ -39,7 +39,7 @@ export const TracerStats: React.FC<TracerStatsProps> = ({
         <Flex justify="space-between" align="center">
           <HStack>
             <Icon as={FiCheckCircle} color="green.500" />
-            <Text fontSize="xs" color="gray.600">Active</Text>
+            <Text fontSize="xs" color="fg.subtle">Active</Text>
           </HStack>
           <Text fontSize="sm" fontWeight="medium">{activeNodes}</Text>
         </Flex>
@@ -47,7 +47,7 @@ export const TracerStats: React.FC<TracerStatsProps> = ({
         <Flex justify="space-between" align="center">
           <HStack>
             <Icon as={FiActivity} color="purple.500" />
-            <Text fontSize="xs" color="gray.600">Connections</Text>
+            <Text fontSize="xs" color="fg.subtle">Connections</Text>
           </HStack>
           <Text fontSize="sm" fontWeight="medium">{totalEdges}</Text>
         </Flex>
@@ -55,7 +55,7 @@ export const TracerStats: React.FC<TracerStatsProps> = ({
         <Flex justify="space-between" align="center">
           <HStack>
             <Icon as={FiClock} color="orange.500" />
-            <Text fontSize="xs" color="gray.600">Events</Text>
+            <Text fontSize="xs" color="fg.subtle">Events</Text>
           </HStack>
           <Text fontSize="sm" fontWeight="medium">{totalEvents}</Text>
         </Flex>

@@ -84,6 +84,8 @@ const thenSchema = z.array(
 export const ruleSchema = z.object({
     id: z.string(),
     name: z.string().min(1),
+    description: z.string().optional(),
+    isTemplate: z.boolean().optional(),
     interval: z.string(), // Could be further refined with regex e.g. /^[0-9]+[smhd]$/
     enabled: z.boolean(),
     when: z.object({

@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, Node, Edge, NodeChange, EdgeChange, Connection, Background, BackgroundVariant, Controls } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Box, Flex, Text, Icon, Spinner, Button } from '@chakra-ui/react';
-import { FiAlertTriangle, FiWifiOff, FiPlay, FiRotateCcw } from 'react-icons/fi';
+import { FiAlertTriangle, FiWifiOff } from 'react-icons/fi';
 import { CustomTracerNode } from './CustomTracerNode';
 import { CustomFloatingTracerEdge } from './CustomFloatingTracerEdge';
 import FloatingConnectionLine from './FloatingConnectionLine';
@@ -27,8 +27,8 @@ interface TracerFlowProps {
     isLoading?: boolean;
     error?: any;
     hasData?: boolean;
-    onRetry?: () => void;
-    onLoadData?: () => void;
+    isRuleEnabled?: boolean;
+    ruleStatus?: string;
 }
 
 export const TracerFlow: React.FC<TracerFlowProps> = ({
@@ -41,8 +41,8 @@ export const TracerFlow: React.FC<TracerFlowProps> = ({
     isLoading,
     error,
     hasData,
-    onRetry,
-    onLoadData
+    isRuleEnabled,
+    ruleStatus
 }) => {
     return (
         <Box flex={1} position="relative">
@@ -64,7 +64,7 @@ export const TracerFlow: React.FC<TracerFlowProps> = ({
 
                 {/* <Background variant={BackgroundVariant.Dots} /> */}
                 <Controls />
-                {/* Overlay for loading/error state */}
+                {/* Overlay for loading/error/status */}
                 {(isLoading || error || !hasData) && (
                     <Flex
                         position="absolute"
@@ -84,20 +84,31 @@ export const TracerFlow: React.FC<TracerFlowProps> = ({
                                     <Icon as={FiAlertTriangle} boxSize="48px" mx="auto" mb={4} color="red.400" />
                                     <Text fontSize="lg" fontWeight="semibold" mb={2} color="red.600">Error Loading Data</Text>
                                     <Text color="fg" mb={4}>{error.message}</Text>
-                                    <Button onClick={onRetry} colorPalette="red">
-                                        <Icon as={FiRotateCcw} mr={2} />
-                                        Retry
-                                    </Button>
+                                    <Text fontSize="sm" color="fg.muted">
+                                        Please check the rule configuration or try again later
+                                    </Text>
+                                </>
+                            ) : !isRuleEnabled ? (
+                                <>
+                                    <Icon as={FiWifiOff} boxSize="48px" mx="auto" mb={4} color="orange.400" />
+                                    <Text fontSize="lg" fontWeight="semibold" mb={2} color="orange.600">Rule Disabled</Text>
+                                    <Text color="fg" mb={4}>
+                                        This rule is currently disabled. Enable it to start monitoring.
+                                    </Text>
+                                    <Text fontSize="sm" color="fg.muted">
+                                        Status: {ruleStatus || 'Inactive'}
+                                    </Text>
                                 </>
                             ) : (
                                 <>
                                     <Icon as={FiWifiOff} boxSize="48px" mx="auto" mb={4} color="gray.400" />
                                     <Text fontSize="lg" fontWeight="semibold" mb={2}>No Data Available</Text>
-                                    <Text color="fg" mb={4}>Click "Load Data" to fetch alert information</Text>
-                                    <Button onClick={onLoadData} colorPalette="blue">
-                                        <Icon as={FiPlay} mr={2} />
-                                        Load Data
-                                    </Button>
+                                    <Text color="fg" mb={4}>
+                                        Waiting for alert data to load automatically
+                                    </Text>
+                                    <Text fontSize="sm" color="fg.muted">
+                                        Data will appear when rule triggers are detected
+                                    </Text>
                                 </>
                             )}
                         </Box>

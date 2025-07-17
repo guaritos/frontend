@@ -9,6 +9,9 @@ import { Tag } from "@/components/ui/tag";
 import { useGetOwnerBlacklist } from "@/hooks/useGetOwnerBlacklist";
 import contracts from "@/constants/contracts";
 import { useEffect } from "react";
+import JsonView from "@uiw/react-json-view";
+import { darkTheme } from "@uiw/react-json-view/dark";
+import { Field } from "@/components/ui/field";
 
 interface Props extends StackProps {
     rule: z.infer<typeof ruleSchema>;
@@ -28,6 +31,7 @@ export const RuleBasedCard = ({ rule, children, ...props }: Props) => {
     return (
         <VStack
             cursor={"pointer"}
+            w={"full"}
             align={"start"}
             p={"4"}
             rounded={"2xl"}
@@ -50,6 +54,9 @@ export const RuleBasedCard = ({ rule, children, ...props }: Props) => {
                 <Heading as={"h6"} size="md" fontWeight={"semibold"}>
                     {rule.name}
                 </Heading>
+                <Text fontSize={"sm"} color={"fg.subtle"}>
+                    {rule.description || "-"}
+                </Text>
             </VStack>
             <HStack w={"full"} justify={"space-between"}>
                 <Button variant={"plain"} rounded={"full"} colorPalette={"default"} size={"xs"}>
@@ -93,7 +100,22 @@ const RuleBasedDetailDrawer = ({ rule, ...props }: RuleBasedDetailDrawerProps) =
                     </VStack>
                 </DrawerHeader>
                 <DrawerBody>
-
+                    <VStack w={"full"} align={"start"} gap={"4"}>
+                        <Text fontSize={"sm"} color={"fg.subtle"}>
+                            {rule.description || "No description provided."}
+                        </Text>
+                        <Field label="Rule Details" w={"full"}>
+                            <JsonView
+                                value={rule}
+                                style={{
+                                    ...darkTheme,
+                                    padding: "16px",
+                                    maxHeight: "75vh",
+                                    overflowY: "auto",
+                                    borderRadius: "16px"
+                                }} />
+                        </Field>
+                    </VStack>
                 </DrawerBody>
             </DrawerContent>
         </DrawerRoot>

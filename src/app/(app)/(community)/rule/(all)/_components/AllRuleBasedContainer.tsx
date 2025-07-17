@@ -4,13 +4,14 @@ import { RuleBasedCard } from "@/app/(app)/_components/RuleBasedCard";
 import { EmptyContent } from "@/components/global/misc";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetRules } from "@/hooks";
+import { useGetRulesTemplate } from "@/hooks/useGetRulesTemplate";
 import { For, StackProps, VStack, Text } from "@chakra-ui/react";
 
 interface Props extends StackProps {
 
 }
 export function AllRuleBasedContainer({ children, ...props }: Props) {
-    const { data: rules, isLoading } = useGetRules({
+    const { data: rules, isLoading } = useGetRulesTemplate({
         options: {
             staleTime: 1000 * 60 * 1, // 1 minute
         }
@@ -37,7 +38,7 @@ export function AllRuleBasedContainer({ children, ...props }: Props) {
                 align={"center"}
                 justifyContent={"center"}
             >
-                <EmptyContent 
+                <EmptyContent
                     title="No Rules Found"
                     description="There are currently no rules available."
                 />

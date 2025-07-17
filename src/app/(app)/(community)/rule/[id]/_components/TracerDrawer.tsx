@@ -1,7 +1,6 @@
 "use client";
 
-import { Button, DrawerRootProps, Heading, HStack, Icon, Span, StackProps, Text, VStack } from "@chakra-ui/react";
-import { DrawerActionTrigger, DrawerBody, DrawerContent, DrawerHeader, DrawerRoot, DrawerTrigger } from "@/components/ui/drawer";
+import { Button, Box, Heading, HStack, Icon, IconButton, Span, Text, VStack, Tabs, TabsRoot, TabsList, TabsTrigger, TabsContent } from "@chakra-ui/react";
 import { Tag } from "@/components/ui/tag";
 import { Node } from '@xyflow/react';
 import { TracerStats } from './TracerStats';
@@ -9,9 +8,10 @@ import { NodeDetails } from './NodeDetails';
 import { AlertInfo } from './AlertInfo';
 import { EventsPanel } from './EventsPanel';
 import { RankLegend } from './RankLegend';
-import { HiChartBar, HiInformationCircle, HiCog, HiDownload } from "react-icons/hi";
+import { HiChartBar, HiInformationCircle, HiCog, HiDownload, HiX, HiViewGrid, HiClock, HiDatabase } from "react-icons/hi";
+import { useState } from 'react';
 
-interface TracerDrawerProps extends Omit<DrawerRootProps, "children"> {
+interface TracerDrawerProps {
   alertData: any;
   selectedNode: Node | null;
   stats: {
@@ -24,61 +24,66 @@ interface TracerDrawerProps extends Omit<DrawerRootProps, "children"> {
   isConnected: boolean;
 }
 
-export const TracerDrawer = ({ 
-  alertData, 
-  selectedNode, 
-  stats, 
-  events, 
+export const TracerDrawer = ({
+  alertData,
+  selectedNode,
+  stats,
+  events,
   isConnected,
-  ...props 
 }: TracerDrawerProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   // Extract max rank from alert data for legend
-  const maxRank = alertData?.data?.rank_items ? 
-    Math.max(...Object.values(alertData.data.rank_items) as number[]) : 
+  const maxRank = alertData?.data?.rank_items ?
+    Math.max(...Object.values(alertData.data.rank_items) as number[]) :
     undefined;
 
   return (
-    <DrawerRoot size={"lg"} {...props}>
-      <DrawerTrigger asChild>
-        <Button 
+    <>
+      {/* Trigger Button */}
+      <IconButton
+        position="absolute"
+        top={4}
+        right={4}
+        zIndex={1000}
+        rounded={"full"}
+        size={"sm"}
+        colorPalette={"primary"}
+        transition={"all 0.3s ease-in-out"}
+        onClick={() => setIsOpen(!isOpen)}
+        _hover={{
+          scale: 1.05,
+        }}
+        _active={{
+          scale: 0.975
+        }}
+      >
+        <Icon as={isOpen ? HiX : HiChartBar} />
+      </IconButton>
+
+      {/* Panel */}
+      {isOpen && (
+        <VStack
           position="absolute"
-          top={4}
-          right={4}
-          zIndex={1000}
-          rounded={"full"} 
-          size={"sm"}
-          colorPalette={"primary"}
-          transition={"all 0.3s ease-in-out"}
-          _hover={{
-            scale: 1.05,
-          }}
-          _active={{
-            scale: 0.975
-          }}
+          top={0}
+          right={0}
+          w="md"
+          h="full"
+          rounded={"3xl"}
+          p={"4"}
+          bg="bg.panel"
+          shadow="2xl"
+          zIndex={999}
+          overflow="auto"
         >
-          <Icon as={HiChartBar} mr={2} />
-          Dashboard
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <VStack w={"full"} align={"start"}>
+          {/* Header */}
+          <VStack w={"full"} align={"start"} gap={4}>
             <HStack justify="space-between" w="full">
               <HStack>
                 <Icon as={HiInformationCircle} color="primary.500" />
                 <Text color={"fg.subtle"}>
                   Alert Analysis
                 </Text>
-              </HStack>
-              <HStack>
-                <Button variant={"plain"} rounded={"full"} size={"xs"}>
-                  <Icon as={HiCog} />
-                  Settings
-                </Button>
-                <Button variant={"outline"} rounded={"full"} size={"xs"}>
-                  <Icon as={HiDownload} />
-                  Export
-                </Button>
               </HStack>
             </HStack>
             <Heading as={"h6"} size="2xl" fontWeight={"semibold"}>
@@ -103,29 +108,49 @@ export const TracerDrawer = ({
               </Tag>
             </HStack>
           </VStack>
-        </DrawerHeader>
-        <DrawerBody>
-          <VStack align="stretch" gap={6} h="full">
-            {/* Alert Info */}
-            {alertData && <AlertInfo alertData={alertData} />}
 
-            {/* Rank Legend */}
-            <RankLegend maxRank={maxRank} />
+          {/* Body */}
+          <TabsRoot defaultValue="overview" h="full" w={"full"}>
+            <TabsList>
+              <TabsTrigger value="overview">
+                <Icon as={HiViewGrid} mr={2} />
+                Overview
+              </TabsTrigger>
+              <Tabs.Trigger value="events">
+                <Icon as={HiClock} mr={2} />
+                Events
+              </Tabs.Trigger>
+              <TabsTrigger value="system">
+                <Icon as={HiDatabase} mr={2} />
+                System
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview">
+              <VStack w={"full"} h={"full"} align="stretch" gap={6}>
+                {/* Alert Info */}
+                {alertData && <AlertInfo alertData={alertData} />}
 
-            {/* Stats */}
-            <TracerStats
-              totalNodes={stats.totalNodes}
-              activeNodes={stats.activeNodes}
-              totalEdges={stats.totalEdges}
-              totalEvents={stats.totalEvents}
-              isConnected={isConnected}
-            />
+                {/* Rank Legend */}
+                <RankLegend maxRank={maxRank} />
+              </VStack>
+            </TabsContent>
 
-            {/* Events Panel */}
-            <EventsPanel events={events} />
-          </VStack>
-        </DrawerBody>
-      </DrawerContent>
-    </DrawerRoot>
+            <TabsContent value="events">
+              <EventsPanel events={events} />
+            </TabsContent>
+
+            <TabsContent value="system">
+              <TracerStats
+                totalNodes={stats.totalNodes}
+                activeNodes={stats.activeNodes}
+                totalEdges={stats.totalEdges}
+                totalEvents={stats.totalEvents}
+                isConnected={isConnected}
+              />
+            </TabsContent>
+          </TabsRoot>
+        </VStack>
+      )}
+    </>
   );
 };

@@ -20,7 +20,7 @@ export default async function Page({
 
   return (
     <PageLayout>
-      <Box w="full" h="100vh">
+      <Box w="full" h="full">
         <TracerDashboard 
           ruleId={id} 
           userId={userId} 

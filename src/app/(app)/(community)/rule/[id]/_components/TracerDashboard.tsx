@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { applyNodeChanges, applyEdgeChanges, addEdge, Node, Edge, NodeChange, EdgeChange, Connection } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useTracerData } from '@/hooks';
-import { Box, Flex } from '@chakra-ui/react';
+import { useTracerData, useTracerEvent } from '@/hooks';
+import { Box } from '@chakra-ui/react';
 import { TracerFlow } from './TracerFlow';
-import { TracerHeader } from './TracerHeader';
 import { TracerDrawer } from './TracerDrawer';
 import { TracerStatusIndicator } from './TracerStatusIndicator';
-import { TracerNotification } from './TracerNotification';
 import { TracerNodeData } from './CustomTracerNode';
 
 interface TracerDashboardProps {
@@ -25,7 +23,7 @@ export const TracerDashboard: React.FC<TracerDashboardProps> = ({ ruleId, userId
   const {
     nodes,
     edges,
-    events,
+    events: tracerEvents,
     setNodes,
     setEdges,
     alertData,
@@ -35,8 +33,42 @@ export const TracerDashboard: React.FC<TracerDashboardProps> = ({ ruleId, userId
     processAlertData,
     resetData,
     stats,
-    isConnected
+    isConnected: isDataConnected
   } = useTracerData(ruleId);
+
+  // Use the tracer event hook for realtime events
+  const {
+    isConnected: isSocketConnected,
+    events: realtimeEvents,
+    connect: connectSocket,
+    disconnect: disconnectSocket,
+    clearEvents
+  } = useTracerEvent();
+
+  // Auto-connect when component mounts
+  useEffect(() => {
+    if (userId && !isSocketConnected) {
+      connectSocket({ userId });
+    }
+  }, [userId, isSocketConnected, connectSocket]);
+
+  // Auto-disconnect when component unmounts
+  useEffect(() => {
+    return () => {
+      if (isSocketConnected) {
+        disconnectSocket();
+      }
+    };
+  }, [isSocketConnected, disconnectSocket]);
+
+  // Memoized values
+  const allEvents = useMemo(() => {
+    return [...tracerEvents, ...realtimeEvents];
+  }, [tracerEvents, realtimeEvents]);
+
+  const isConnected = useMemo(() => {
+    return isDataConnected && isSocketConnected;
+  }, [isDataConnected, isSocketConnected]);
 
   // Process alert data when available
   const startMonitoring = useCallback(() => {
@@ -74,20 +106,9 @@ export const TracerDashboard: React.FC<TracerDashboardProps> = ({ ruleId, userId
   }, []);
 
   return (
-    <Box h="100vh" position="relative">
+    <Box h="full" position="relative">
       {/* Main Flow Area - Full Width */}
       <Box h="full" display="flex" flexDirection="column">
-        {/* Header */}
-        {/* <TracerHeader
-          isConnected={isConnected}
-          isLoading={isLoading}
-          hasData={!!alertData}
-          stats={stats}
-          onReset={resetData}
-          onLoadData={startMonitoring}
-          onRefresh={refetch}
-        /> */}
-
         {/* Flow Canvas - Full Width */}
         <TracerFlow
           nodes={nodes}
@@ -99,8 +120,6 @@ export const TracerDashboard: React.FC<TracerDashboardProps> = ({ ruleId, userId
           isLoading={isLoading}
           error={error}
           hasData={!!alertData}
-          onRetry={refetch}
-          onLoadData={startMonitoring}
         />
       </Box>
 
@@ -117,12 +136,10 @@ export const TracerDashboard: React.FC<TracerDashboardProps> = ({ ruleId, userId
         alertData={alertData}
         selectedNode={selectedNode}
         stats={stats}
-        events={events}
+        events={allEvents}
         isConnected={isConnected}
       />
 
-      {/* Event Notifications */}
-      <TracerNotification events={events} />
     </Box>
   );
 };

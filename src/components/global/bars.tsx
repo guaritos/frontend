@@ -13,6 +13,7 @@ import { ConnectWalletButton } from "./wallet";
 import { HiPlus } from "react-icons/hi";
 import { usePathname } from "next/navigation";
 import { Tooltip } from "../ui/tooltip";
+import { FaBan } from "react-icons/fa";
 
 interface HeaderProps extends HTMLChakraProps<"header"> {
 }
@@ -49,18 +50,12 @@ export function DashboardHeader({ children, ...props }: HeaderProps) {
     return (
         <chakra.header w={"full"} p={["2", "4"]} {...props}>
             <HStack justifyContent={"space-between"} alignItems={"center"} w={"full"}>
-                <Input />
+                <Input rounded={"lg"} size={"sm"} maxW={"md"} placeholder="Search here"/>
                 <HStack>
                     <Link href={"/rule/create"}>
-                        <Button variant={"outline"} colorPalette={"default"} rounded={"full"}>
-                            <Icon as={HiPlus} />
-                            Publish rule
-                        </Button>
-                    </Link>
-                    <Link href={"/tracer/create"}>
                         <Button colorPalette={"default"} rounded={"full"}>
                             <Icon as={PiGraph} />
-                            Create tracer
+                            Publish tracer
                         </Button>
                     </Link>
                 </HStack>
@@ -86,10 +81,15 @@ export function DashboardSidebar({ children, ...props }: DashboardSidebarProps) 
             icon: PiGraph,
         },
         {
-            href: "rule",
+            href: "/rule",
             label: "Templates",
             icon: TbWorld,
         },
+        {
+            href: "/blacklist",
+            label: "Blacklist",
+            icon: FaBan,
+        }
     ];
 
     const isActive = (href: string) => pathname.includes(href);
@@ -114,7 +114,7 @@ export function DashboardSidebar({ children, ...props }: DashboardSidebarProps) 
                 <VStack>
                     <For each={links}>
                         {(link) => (
-                            <Link asChild href={link.href} key={link.href}>
+                            <Link href={link.href} key={link.href}>
                                 <Tooltip content={link.label}
                                     openDelay={100}
                                     closeDelay={100}

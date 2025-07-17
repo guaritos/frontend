@@ -50,7 +50,7 @@ export const TracerNotification = ({ events }: TracerNotificationProps) => {
   return (
     <Box
       position="absolute"
-      top={20}
+      top={4}
       right={4}
       zIndex={1001}
       bg={"bg.panel"}

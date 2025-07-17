@@ -1,21 +1,39 @@
+"use client";
+
 import { useState, useMemo } from 'react';
-import { 
-  Box, 
-  Flex, 
-  Text, 
-  Badge, 
-  VStack, 
-  Icon
+import {
+  Box,
+  Flex,
+  Text,
+  Badge,
+  VStack,
+  Icon,
+  createListCollection,
+  Button,
+  SelectHiddenSelect,
+  Code
 } from '@chakra-ui/react';
-import { 
+import {
   FiAlertTriangle,
   FiClock,
   FiFilter
 } from 'react-icons/fi';
+import JsonView from '@uiw/react-json-view';
+import { darkTheme } from '@uiw/react-json-view/dark';
+import { SelectContent, SelectItem, SelectLabel, SelectRoot, SelectTrigger, SelectValueText } from '@/components/ui/select';
 
 interface EventsPanelProps {
   events: any[];
 }
+
+const collection = createListCollection({
+  items: [
+    { value: 'all', label: 'All' },
+    { value: 'alert_triggered', label: 'Alerts' },
+    { value: 'user_notification', label: 'Notifications' },
+    { value: 'tracer_update', label: 'Updates' }
+  ]
+})
 
 export const EventsPanel: React.FC<EventsPanelProps> = ({ events }) => {
   const [eventFilter, setEventFilter] = useState<string>('all');
@@ -27,82 +45,66 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({ events }) => {
   }, [events, eventFilter]);
 
   return (
-    <Box flex={1} rounded="lg" minH="200px">
-      <Box p={3} borderBottomWidth={1}>
-        <Flex align="center" justify="space-between">
-          <Flex align="center" gap={2}>
-            <Icon as={FiAlertTriangle} />
-            <Text fontSize="sm" fontWeight="semibold">Events</Text>
-          </Flex>
-          <Flex align="center" gap={2}>
-            <Icon as={FiFilter} boxSize="12px" />
-            <select 
-              value={eventFilter} 
-              onChange={(e: any) => setEventFilter(e.target.value)}
-              style={{
-                fontSize: '12px',
-                border: '1px solid #e2e8f0',
-                borderRadius: '4px',
-                padding: '2px 4px'
-              }}
-            >
-              <option value="all">All</option>
-              <option value="alert_triggered">Alerts</option>
-              <option value="user_notification">Notifications</option>
-              <option value="tracer_update">Updates</option>
-            </select>
-          </Flex>
+    <VStack w={"full"} h={"full"}  gap={"4"}>
+      <VStack w={"full"} align="start">
+        <Flex align="center" gap={2}>
+          <Icon as={FiAlertTriangle} />
+          <Text fontSize="sm" fontWeight="semibold">Events</Text>
         </Flex>
-      </Box>
-      <Box>
-        <Box h="200px" overflowY="auto" px={4}>
-          {filteredEvents.length === 0 ? (
-            <VStack py={8} color="fg">
-              <Icon as={FiClock} boxSize="32px" mb={2} />
-              <Text fontSize="sm">No events yet</Text>
-            </VStack>
-          ) : (
-            <VStack gap={2} pb={4} align="stretch">
-              {filteredEvents.slice(-10).map((event: any, index: number) => (
-                <Box key={index} border="1px" borderColor="gray.200" rounded="lg" p={3}>
-                  <Flex align="center" justify="space-between" mb={2}>
-                    <Badge 
-                      variant="outline" 
-                      fontSize="xs"
-                      colorPalette={
-                        event.type === 'alert_triggered' ? 'red' :
-                        event.type === 'user_notification' ? 'blue' :
+        <SelectRoot
+          variant={"subtle"}
+          collection={collection}
+          onValueChange={(e) => setEventFilter(e.value[0])}
+        >
+          <SelectTrigger>
+            <SelectValueText placeholder="Filter" />'
+          </SelectTrigger>
+          <SelectContent>
+            {
+              collection.items.map(item => (
+                <SelectItem
+                  key={item.value}
+                  item={item}
+                >
+                  {item.label}
+                </SelectItem>
+              ))
+            }
+          </SelectContent>
+        </SelectRoot>
+      </VStack>
+      {filteredEvents.length === 0 ? (
+        <VStack py={8} color="fg">
+          <Icon as={FiClock} boxSize="32px" mb={2} />
+          <Text fontSize="sm">No events yet</Text>
+        </VStack>
+      ) : (
+        <VStack gap={"4"} w={"full"} h={"full"} align={"start"} overflowY="hidden">
+          {filteredEvents.slice(-10).map((event: any, index: number) => (
+            <>
+              <Flex align="center" justify="space-between" w={"full"}>
+                <Badge
+                  variant="solid"
+                  fontSize="xs"
+                  colorPalette={
+                    event.type === 'alert_triggered' ? 'red' :
+                      event.type === 'user_notification' ? 'blue' :
                         event.type === 'tracer_update' ? 'green' : 'gray'
-                      }
-                    >
-                      {event.type.replace('_', ' ')}
-                    </Badge>
-                    <Text fontSize="xs" color="fg">
-                      {event.timestamp.toLocaleTimeString()}
-                    </Text>
-                  </Flex>
-                  <Box
-                    as="pre"
-                    fontSize="xs"
-                    color="gray.700"
-                    whiteSpace="pre-wrap"
-                    wordBreak="break-words"
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    maxH="60px"
-                  >
-                    {typeof event.data === 'string' 
-                      ? event.data 
-                      : JSON.stringify(event.data, null, 2).slice(0, 100)
-                    }
-                    {JSON.stringify(event.data, null, 2).length > 100 && '...'}
-                  </Box>
-                </Box>
-              ))}
-            </VStack>
-          )}
-        </Box>
-      </Box>
-    </Box>
+                  }
+                >
+                  {event.type.replace('_', ' ')}
+                </Badge>
+                <Text fontSize="xs" color="fg">
+                  {event.timestamp.toLocaleTimeString()}
+                </Text>
+              </Flex>
+              <Box overflowY="auto" w={"full"} h="full">
+                <JsonView value={event.data} style={darkTheme} />
+              </Box>
+            </>
+          ))}
+        </VStack>
+      )}
+    </VStack>
   );
 };
