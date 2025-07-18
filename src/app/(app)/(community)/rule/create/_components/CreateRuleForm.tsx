@@ -8,7 +8,7 @@ import { RuleYamlEditor } from "@/engines/RuleBasedYamlEditor";
 import { Field } from "@/components/ui/field";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import YAML from 'yaml';
 import { useCreateRule } from "@/hooks";
 import { toaster } from "@/components/ui/toaster";
@@ -95,6 +95,7 @@ export function CreateRuleForm({ children, ...props }: Props) {
     const [sourceAddress, setSourceAddress] = useState("");
     const [inOwnerBlacklist, setInOwnerBlacklist] = useState(false);
     const [inCommunityBlacklist, setInCommunityBlacklist] = useState(false);
+    const [cronValue, setCronValue] = useState("* * * * * *");
 
     const {
         register,
@@ -106,7 +107,8 @@ export function CreateRuleForm({ children, ...props }: Props) {
     } = useForm<CreateRuleFormData>({
         defaultValues: {
             rule: YAML.stringify({
-                description: "",
+                name: "New Rule",
+                description: "This is a new rule",
                 tags: [],
                 user_id: account?.address.toString() || "",
                 cron: "* * * * * *", // Every second
@@ -121,6 +123,51 @@ export function CreateRuleForm({ children, ...props }: Props) {
         },
         resolver: zodResolver(createRuleFormSchema)
     });
+
+    // Update form fields when YAML changes
+    const updateFieldsFromYaml = (yamlString: string) => {
+        try {
+            const ruleObject = YAML.parse(yamlString);
+            if (ruleObject) {
+                setSourceAddress(ruleObject.source || "");
+                setEnabledRule(ruleObject.enabled || false);
+                setIsTemplate(ruleObject.is_template || false);
+                setInOwnerBlacklist(ruleObject.in_owner_blacklist || false);
+                setInCommunityBlacklist(ruleObject.in_community_blacklist || false);
+                setCronValue(ruleObject.cron || "* * * * * *");
+            }
+        } catch (err) {
+            // Ignore parse errors when YAML is being edited
+        }
+    };
+
+    // Update YAML when individual fields change
+    const updateYamlFromFields = () => {
+        try {
+            const currentRule = watch("rule") || "";
+            const ruleObject = YAML.parse(currentRule);
+
+            ruleObject.source = sourceAddress;
+            ruleObject.enabled = enabledRule;
+            ruleObject.is_template = isTemplate;
+            ruleObject.in_owner_blacklist = inOwnerBlacklist;
+            ruleObject.in_community_blacklist = inCommunityBlacklist;
+            ruleObject.cron = cronValue;
+
+            const updatedYaml = YAML.stringify(ruleObject);
+            setValue("rule", updatedYaml);
+        } catch (err) {
+            console.error("Error updating YAML:", err);
+        }
+    };
+
+    // Initialize fields from default YAML
+    useEffect(() => {
+        const defaultRule = watch("rule");
+        if (defaultRule) {
+            updateFieldsFromYaml(defaultRule);
+        }
+    }, []);
 
     const onSubmit: SubmitHandler<CreateRuleFormData> = async (data) => {
         if (!account) {
@@ -158,79 +205,41 @@ export function CreateRuleForm({ children, ...props }: Props) {
             <VStack w={"full"} gap={"6"} {...props}>
                 <Field label="Source Address" helperText="Source address to trace">
                     <Input
-                        value={YAML.parse(watch("rule") || "").source || sourceAddress}
+                        value={sourceAddress}
                         onChange={(e) => {
                             setSourceAddress(e.target.value);
-                            try {
-                                const currentRule = watch("rule") || "";
-                                const ruleObject = YAML.parse(currentRule);
-
-                                ruleObject.source = e.target.value;
-
-                                const updatedYaml = YAML.stringify(ruleObject);
-                                setValue("rule", updatedYaml);
-                            } catch (err) {
-                                console.error("Invalid YAML format", err);
-                            }
                         }}
+                        onBlur={updateYamlFromFields}
                         placeholder="Enter account address"
                     />
                 </Field>
                 <Field label="Cron Schedule" helperText="Set the execution schedule for this rule">
                     <CronInput
-                        value={YAML.parse(watch("rule") || "").cron || "* * * * * *"}
-                        onChange={(cronValue) => {
-                            try {
-                                const currentRule = watch("rule") || "";
-                                const ruleObject = YAML.parse(currentRule);
-
-                                ruleObject.cron = cronValue;
-
-                                const updatedYaml = YAML.stringify(ruleObject);
-                                setValue("rule", updatedYaml);
-                            } catch (err) {
-                                console.error("Invalid YAML format", err);
-                            }
+                        value={cronValue}
+                        onChange={(newCronValue) => {
+                            setCronValue(newCronValue);
+                            // Update YAML immediately for cron changes
+                            setTimeout(updateYamlFromFields, 100);
                         }}
                     />
                 </Field>
                 <Field label="Enable Rule" helperText="Enable to activate immediately after creation">
                     <Switch
                         label="Enable Rule"
-                        checked={YAML.parse(watch("rule") || "").enabled || enabledRule}
+                        checked={enabledRule}
                         onCheckedChange={(e) => {
-                            try {
-                                const currentRule = watch("rule") || "";
-                                const ruleObject = YAML.parse(currentRule);
-
-                                ruleObject.enabled = e.checked;
-
-                                const updatedYaml = YAML.stringify(ruleObject);
-                                setValue("rule", updatedYaml);
-                                setEnabledRule(e.checked);
-                            } catch (err) {
-                                console.error("Invalid YAML format", err);
-                            }
+                            setEnabledRule(e.checked);
+                            setTimeout(updateYamlFromFields, 100);
                         }}
                     />
                 </Field>
                 <Field label="Template" helperText="Choose this if rule is a template">
                     <Switch
                         label="Template"
-                        checked={YAML.parse(watch("rule") || "").is_template || isTemplate}
+                        checked={isTemplate}
                         onCheckedChange={(e) => {
-                            try {
-                                const currentRule = watch("rule") || "";
-                                const ruleObject = YAML.parse(currentRule);
-
-                                ruleObject.is_template = e.checked;
-
-                                const updatedYaml = YAML.stringify(ruleObject);
-                                setValue("rule", updatedYaml);
-                                setIsTemplate(e.checked);
-                            } catch (err) {
-                                console.error("Invalid YAML format", err);
-                            }
+                            setIsTemplate(e.checked);
+                            setTimeout(updateYamlFromFields, 100);
                         }}
                     />
                 </Field>
@@ -238,42 +247,20 @@ export function CreateRuleForm({ children, ...props }: Props) {
                     <Field label="In Owner Blacklist" helperText="Check if rule should be in owner blacklist">
                         <Switch
                             label="In Owner Blacklist"
-                            checked={YAML.parse(watch("rule") || "").in_owner_blacklist || inOwnerBlacklist}
+                            checked={inOwnerBlacklist}
                             onCheckedChange={(e) => {
                                 setInOwnerBlacklist(e.checked);
-
-                                try {
-                                    const currentRule = watch("rule") || "";
-                                    const ruleObject = YAML.parse(currentRule);
-
-                                    ruleObject.in_owner_blacklist = e.checked;
-
-                                    const updatedYaml = YAML.stringify(ruleObject);
-                                    setValue("rule", updatedYaml);
-                                } catch (err) {
-                                    console.error("Invalid YAML format", err);
-                                }
+                                setTimeout(updateYamlFromFields, 100);1
                             }}
                         />
                     </Field>
                     <Field label="In Community Blacklist" helperText="Check if rule should be in community blacklist">
                         <Switch
                             label="In Community Blacklist"
-                            checked={YAML.parse(watch("rule") || "").in_community_blacklist || inCommunityBlacklist}
+                            checked={inCommunityBlacklist}
                             onCheckedChange={(e) => {
                                 setInCommunityBlacklist(e.checked);
-
-                                try {
-                                    const currentRule = watch("rule") || "";
-                                    const ruleObject = YAML.parse(currentRule);
-
-                                    ruleObject.in_community_blacklist = e.checked;
-
-                                    const updatedYaml = YAML.stringify(ruleObject);
-                                    setValue("rule", updatedYaml);
-                                } catch (err) {
-                                    console.error("Invalid YAML format", err);
-                                }
+                                setTimeout(updateYamlFromFields, 100);
                             }}
                         />
                     </Field>
@@ -289,6 +276,8 @@ export function CreateRuleForm({ children, ...props }: Props) {
                                     onTemplateSelect={(template) => {
                                         setRuleTemplate(template);
                                         field.onChange(YAML.stringify(template));
+                                        // Update fields from the new template
+                                        updateFieldsFromYaml(YAML.stringify(template));
                                     }}
                                     selectedTemplate={ruleTemplate}
                                 />
@@ -296,7 +285,13 @@ export function CreateRuleForm({ children, ...props }: Props) {
                         } errorText={errors.rule?.message}>
                             <RuleYamlEditor
                                 value={field.value}
-                                onChange={(value) => field.onChange(value)}
+                                onChange={(value) => {
+                                    field.onChange(value);
+                                    // Update fields when YAML is manually edited
+                                    if (value) {
+                                        updateFieldsFromYaml(value);
+                                    }
+                                }}
                             />
                         </Field>
                     )}
